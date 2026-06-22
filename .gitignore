@@ -1,0 +1,29 @@
+# Maven build output
+target/
+
+# Compiled Java class files
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# macOS metadata
+.DS_Store
+
+# IntelliJ IDEA settings
+.idea/
+*.iml
+
+# Eclipse settings
+.metadata/
+.classpath
+.project
+.settings/
+
+# VS Code settings
+.vscode/
+
+# Local libraries (if any)
+lib/
