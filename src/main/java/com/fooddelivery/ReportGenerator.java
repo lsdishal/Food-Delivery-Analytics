@@ -12,7 +12,6 @@ class CustomerReport implements ReportGenerator<Customer>{
         System.out.println("\n----------Customer report----------\n");
         data.forEach(System.out::println);
     }
-
 }
 class RestaurantReport implements ReportGenerator<Restaurant>{
     @Override
