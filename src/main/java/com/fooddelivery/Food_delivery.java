@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,9 +18,9 @@ public class Food_delivery {
 
     public static void main(String[] args) {
         List<Customer> cus = Arrays.asList(
-                new Customer(1L, "Deepthi", "Chennai",LocalDate.parse("2024-01-10")),
-                new Customer(2L, "Dishal", "bengaluru",LocalDate.parse("2025-01-15")),
-                new Customer(3L, "Tharun", "cuddalore",LocalDate.parse("2023-05-20"))
+                new Customer(1L, "Deepthi", "Chennai", LocalDate.parse("2024-01-10")),
+                new Customer(2L, "Dishal", "bengaluru", LocalDate.parse("2025-01-15")),
+                new Customer(3L, "Tharun", "cuddalore", LocalDate.parse("2023-05-20"))
         );
         List<Restaurant> restaurants = Arrays.asList(
                 new Restaurant(1L, "Dominos", "cuddalore", 4.2),
@@ -50,15 +51,14 @@ public class Food_delivery {
         System.out.println("---------------------------------------------------------------");
         System.out.println("\nModule 9: In-memory cache for orders\n");
         System.out.println("---------------------------------------------------------------");
-        
+
         orders.forEach(Food_delivery::processOrder);
 
         System.out.println("Processing again: ");
         orders.forEach(Food_delivery::processOrder);
 
         //Bonus challenge
-        //bonus(orders,restaurants);
-        
+        recommendationEngine(1L, orders, restaurants);
     }
 
     //module 1(validation check)-----------------------------
@@ -129,7 +129,7 @@ public class Food_delivery {
 
         Map<Long, Double> avg = avgspendCustomers(orders);
         System.out.println("\nAverage spend per customer: ");
-        System.out.println(avg);
+        avg.forEach((id,amt)->System.out.println("id ->"+id+" amt : "+amt));
 
         List<Customer> c = customersWithMoreThan20Orders(orders, cus);
         System.out.println("\nCustomers with more than 20 orders: ");
@@ -137,7 +137,7 @@ public class Food_delivery {
 
         List<Customer> c1 = top10(orders, cus);
         System.out.println("\nTop 10 customers: ");
-        System.out.println(c1);
+        c1.forEach(o->System.out.println(o));
         System.out.println("---------------------------------------------------------------");
     }
 
@@ -197,7 +197,7 @@ public class Food_delivery {
                 .filter(r -> r.getRating() > 4.5)
                 .collect(Collectors.toList());
         System.out.println("\nRestaurants with rating greater than 4.5 : ");
-        System.out.println(rating);
+        rating.forEach(o->System.out.println(o));
 
         List<Long> top5 = orders.stream()
                 .collect(Collectors.groupingBy(
@@ -405,79 +405,113 @@ public class Food_delivery {
 
         System.out.println("---------Orders Orders this Month-----------");
         orders.stream()
-                .filter(order->YearMonth.from(order.getOrderTime()).equals(YearMonth.now()))
-                .forEach(order->{
-                    System.out.println("order id :"+order.getOrder_id());
+                .filter(order -> YearMonth.from(order.getOrderTime()).equals(YearMonth.now()))
+                .forEach(order -> {
+                    System.out.println("order id :" + order.getOrder_id());
                 });
 
         System.out.println("---------Revenue last 12 Months----------");
-        LocalDate last12=LocalDate.now().minusMonths(12);
+        LocalDate last12 = LocalDate.now().minusMonths(12);
         orders.stream()
-                .filter(order->!order.getOrderTime().toLocalDate().isBefore(last12))
-                .collect(Collectors.groupingBy(order->order.getOrderTime().getMonth(),Collectors.summingDouble(Order::getOrderAmount)))
-                .forEach((month,amount)->{
-                    System.out.println(month+" --->"+amount);
+                .filter(order -> !order.getOrderTime().toLocalDate().isBefore(last12))
+                .collect(Collectors.groupingBy(order -> order.getOrderTime().getMonth(), Collectors.summingDouble(Order::getOrderAmount)))
+                .forEach((month, amount) -> {
+                    System.out.println(month + " --->" + amount);
                 });
         System.out.println("---------Average Daily Orders---------");
-        double avgDaily=orders.stream()
-                        .collect(Collectors.groupingBy(order->order.getOrderTime().toLocalDate(),Collectors.counting()))
-                        .values()
-                        .stream()
-                        .mapToDouble(Long::doubleValue)
-                        .average()
-                        .orElse(0.0);
-        System.out.println("Average Daily Orders :"+avgDaily);
+        double avgDaily = orders.stream()
+                .collect(Collectors.groupingBy(order -> order.getOrderTime().toLocalDate(), Collectors.counting()))
+                .values()
+                .stream()
+                .mapToDouble(Long::doubleValue)
+                .average()
+                .orElse(0.0);
+        System.out.println("Average Daily Orders :" + avgDaily);
 
         System.out.println("---------Peak revenue Day ---------");
-        LocalDate peakDay=orders.stream()
-                .collect(Collectors.groupingBy(order->order.getOrderTime().toLocalDate(),
-                                                Collectors.summingDouble(Order::getOrderAmount)))
+        LocalDate peakDay = orders.stream()
+                .collect(Collectors.groupingBy(order -> order.getOrderTime().toLocalDate(),
+                        Collectors.summingDouble(Order::getOrderAmount)))
                 .entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse(null);
-        System.out.println("Peak revenue Day :"+peakDay.getDayOfWeek());
+        System.out.println("Peak revenue Day :" + peakDay.getDayOfWeek());
 
     }
     //Module 9(In-memory cache)
-    private static final ConcurrentHashMap<String, LocalDateTime> cache =new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, LocalDateTime> cache = new ConcurrentHashMap<>();
+
     public static void processOrder(Order order) {
 
-        Optional<LocalDateTime> cachedTime =Optional.ofNullable(cache.get(order.getOrder_id()));
+        Optional<LocalDateTime> cachedTime = Optional.ofNullable(cache.get(order.getOrder_id()));
 
         if (cachedTime.isPresent()) {
 
-            long minutes =Duration.between(cachedTime.get(),LocalDateTime.now()).toMinutes();
+            long minutes = Duration.between(cachedTime.get(), LocalDateTime.now()).toMinutes();
             if (minutes < 30) {
-                System.out.println("Order "+order.getOrder_id()+ " already processed. Skipping...");
+                System.out.println("Order " + order.getOrder_id() + " already processed. Skipping...");
                 return;
             }
         }
-        System.out.println("Processing Order : "+ order.getOrder_id());
-        cache.put(order.getOrder_id(),LocalDateTime.now());
+        System.out.println("Processing Order : " + order.getOrder_id());
+        cache.put(order.getOrder_id(), LocalDateTime.now());
     }
-    // public static void bonus(List<Order> orders,List<Restaurant> restaurants){
-    //     System.out.println("---------------------------------------------------------------");
-    //     System.out.println("\nBonus challenges \n");
-    //     System.out.println("---------------------------------------------------------------");
-    //     String mostOrderedCuisine=orders.stream()
-    //         .filter(o->o.getCustomer_id().equals(customer))
-    //         .flatMap(order->order.getItems().stream())
-    //         .collect(Collectors.groupingBy(item->item,Collectors.counting()))
-    //         .entrySet()
-    //         .stream()
-    //         .max(Map.Entry.comparingByValue())
-    //         .map(Map.Entry::getKey)
-    //         .orElse(null);
-        
-    //     System.out.println("Most ordered cuisine : "+mostOrderedCuisine);
 
-    //     Restaurant rat=restaurants.stream()
-    //         .max(Comparator.comparingDouble(Restaurant::getRating))
-    //         .orElse(null);
-    //     System.out.println("Highest rated restaurant : "+rat);
+    //bonus challenge
+    public static Restaurant recommendByPreviousOrders(Long customerId, List<Order> orders, List<Restaurant> restaurants) {
 
-    // }
+        Long restaurantId = orders.stream()
+                .filter(o -> o.getCustomer_id().equals(customerId))
+                .collect(Collectors.groupingBy(Order::getRestaurant_id, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
 
+        return restaurants.stream()
+                .filter(r -> r.getRestaurant_id().equals(restaurantId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static String mostOrderedCuisine(Long customerId, List<Order> orders) {
+
+        return orders.stream()
+                .filter(o -> o.getCustomer_id().equals(customerId))
+                .flatMap(o -> o.getItems().stream())
+                .collect(Collectors.groupingBy(item -> item, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    public static Restaurant highestRatedRestaurant(List<Restaurant> restaurants) {
+
+        return restaurants.stream()
+                .sorted(Comparator.comparingDouble(Restaurant::getRating).reversed())
+                .findFirst()
+                .orElse(null);
+    }
+
+    public static void recommendationEngine(Long customerId, List<Order> orders, List<Restaurant> restaurants) {
+
+        Restaurant previousOrderRecommendation = recommendByPreviousOrders(customerId, orders, restaurants);
+
+        String favouriteCuisine = mostOrderedCuisine(customerId, orders);
+
+        Restaurant highestRated = highestRatedRestaurant(restaurants);
+
+        System.out.println("\n========== RECOMMENDATION ENGINE ==========\n");
+
+        System.out.println("Recommended Restaurant (Previous Orders): " + previousOrderRecommendation);
+
+        System.out.println("Most Ordered Cuisine : " + favouriteCuisine);
+
+        System.out.println("Highest Rated Restaurant : " + highestRated);
+    }
 }
