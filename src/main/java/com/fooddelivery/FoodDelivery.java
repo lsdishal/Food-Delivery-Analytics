@@ -52,17 +52,17 @@ public class FoodDelivery {
         System.out.println("\nModule 9: In-memory cache for orders\n");
         System.out.println("---------------------------------------------------------------");
 
-        orders.forEach(FoodDelivery::processOrder);
+        orders.forEach(FoodDelivery::ProcessOrder);
 
         System.out.println("Processing again: ");
-        orders.forEach(FoodDelivery::processOrder);
+        orders.forEach(FoodDelivery::ProcessOrder);
 
         //Bonus challenge
-        recommendationEngine(1L, orders, restaurants);
+        RecommendationEngine(1L, orders, restaurants);
     }
 
     //module 1(validation check)-----------------------------
-    public static boolean validation(List<Customer> cus, List<Restaurant> restaurants, List<Order> orders) {
+    public static boolean Validation(List<Customer> cus, List<Restaurant> restaurants, List<Order> orders) {
         System.out.println("---------------------------------------------------------------");
         System.out.println("\nModule 1: Validation check\n");
         System.out.println("---------------------------------------------------------------");
@@ -102,12 +102,6 @@ public class FoodDelivery {
                 .and(validRestaurant)
                 .and(validCustomer);
 
-//         System.out.println(validate_amt.test(CurrentOrder));
-//         System.out.println(validate_emptyList.test(CurrentOrder));
-//         System.out.println(validTime.test(CurrentOrder));
-//         System.out.println(validRestaurant.test(CurrentOrder));
-//         System.out.println(validCustomer.test(CurrentOrder));
-//         System.out.println(notDuplicate.test(CurrentOrder)); 
         for (Order CurrentOrder : orders) {
             if (validator.test(CurrentOrder) && notDuplicate.test(CurrentOrder)) {
                 //continue;
@@ -119,42 +113,42 @@ public class FoodDelivery {
     }
 
     //Module 2(Customer analytics)-------
-    public static void reports(List<Order> orders, List<Customer> cus) {
-        Map<Long, Long> fre = frequency_of_Customer(orders);
+    public static void Reports(List<Order> orders, List<Customer> cus) {
+        Map<Long, Long> fre = FrequencyOfCustomer(orders);
         System.out.println("---------------------------------------------------------------");
         System.out.println("\nModule 2: Customer Analytics\n");
         System.out.println("---------------------------------------------------------------");
         System.out.println("Customer Order frequency: ");
         System.out.println(fre);
 
-        Map<Long, Double> avg = avgspendCustomers(orders);
+        Map<Long, Double> avg = AvgSpendCustomer(orders);
         System.out.println("\nAverage spend per customer: ");
-        avg.forEach((id,amt)->System.out.println("id ->"+id+" amt : "+amt));
+        avg.forEach((id, amt) -> System.out.println("id ->" + id + " amt : " + amt));
 
-        List<Customer> c = customersWithMoreThan20Orders(orders, cus);
+        List<Customer> c = CustomersWithMoreThan20Orders(orders, cus);
         System.out.println("\nCustomers with more than 20 orders: ");
         System.out.println(c);
 
-        List<Customer> c1 = top10(orders, cus);
+        List<Customer> c1 = Top10(orders, cus);
         System.out.println("\nTop 10 customers: ");
-        c1.forEach(o->System.out.println(o));
+        c1.forEach(o -> System.out.println(o));
         System.out.println("---------------------------------------------------------------");
     }
 
-    public static Map<Long, Long> frequency_of_Customer(List<Order> orders) {
+    public static Map<Long, Long> FrequencyOfCustomer(List<Order> orders) {
         return orders.stream()
                 .collect(Collectors.groupingBy(Order::getCustomer_id,
                         Collectors.counting()));
     }
 
-    public static Map<Long, Double> avgspendCustomers(List<Order> orders) {
+    public static Map<Long, Double> AvgSpendCustomer(List<Order> orders) {
         return orders.stream()
                 .collect(Collectors.groupingBy(Order::getCustomer_id,
                         Collectors.averagingDouble(Order::getOrderAmount)));
 
     }
 
-    public static List<Customer> top10(List<Order> orders, List<Customer> customers) {
+    public static List<Customer> Top10(List<Order> orders, List<Customer> customers) {
         List<Long> topIds = orders.stream()
                 .collect(Collectors.groupingBy(Order::getCustomer_id, Collectors.summingDouble(Order::getOrderAmount)))
                 .entrySet()
@@ -172,9 +166,9 @@ public class FoodDelivery {
                 .collect(Collectors.toList());
     }
 
-    public static List<Customer> customersWithMoreThan20Orders(List<Order> orders, List<Customer> customers) {
+    public static List<Customer> CustomersWithMoreThan20Orders(List<Order> orders, List<Customer> customers) {
 
-        Map<Long, Long> frequency = frequency_of_Customer(orders);
+        Map<Long, Long> frequency = FrequencyOfCustomer(orders);
 
         return customers.stream()
                 .filter(c -> frequency.getOrDefault(c.getCustomer_id(), 0L) > 20)
@@ -182,7 +176,7 @@ public class FoodDelivery {
     }
 
     // Module 3( Restaurant Analytics )------------------------------------------------------
-    public static void restaurantReports(List<Order> orders, List<Customer> cus, List<Restaurant> restaurants) {
+    public static void RestaurantReports(List<Order> orders, List<Customer> cus, List<Restaurant> restaurants) {
         System.out.println("---------------------------------------------------------------");
         System.out.println("\nModule 3: Restaurant Analytics\n");
         System.out.println("---------------------------------------------------------------");
@@ -197,7 +191,7 @@ public class FoodDelivery {
                 .filter(r -> r.getRating() > 4.5)
                 .collect(Collectors.toList());
         System.out.println("\nRestaurants with rating greater than 4.5 : ");
-        rating.forEach(o->System.out.println(o));
+        rating.forEach(o -> System.out.println(o));
 
         List<Long> top5 = orders.stream()
                 .collect(Collectors.groupingBy(
@@ -233,7 +227,7 @@ public class FoodDelivery {
     }
 
     //Module 4 (Stream processing challenge)
-    public static void streamProcessingChallenge(List<Order> orders, List<Restaurant> restaurants, List<Customer> customers) {
+    public static void StreamProcessingChallenge(List<Order> orders, List<Restaurant> restaurants, List<Customer> customers) {
         System.out.println("---------------------------------------------------------------");
         System.out.println("\nModule 4: Stream processing challenge\n");
         System.out.println("---------------------------------------------------------------");
@@ -317,7 +311,7 @@ public class FoodDelivery {
 
         CompletableFuture<List<Order>> validatedorders = orderfuture.thenApply(orderList -> {
 
-            if (!validation(cus, restaurants, orderList)) {
+            if (!Validation(cus, restaurants, orderList)) {
                 throw new RuntimeException("validation failed");
             } else {
                 System.out.println("All the Orders are valid and none are duplicate");
@@ -326,15 +320,15 @@ public class FoodDelivery {
         });
         CompletableFuture<Void> customerAnalytics = validatedorders.thenAccept(orderList -> {
             System.out.println("\nRunning Customer Analytics...");
-            reports(orderList, cus);
+            Reports(orderList, cus);
         });
         CompletableFuture<Void> restaurantAnalytics = validatedorders.thenAccept(order -> {
             System.out.println("\nRunning Restaurant Analytics...");
-            restaurantReports(order, cus, restaurants);
+            RestaurantReports(order, cus, restaurants);
         });
         CompletableFuture<Void> streamAnalytics = validatedorders.thenAccept(order -> {
             System.out.println("\nRunning Stream Analytics...");
-            streamProcessingChallenge(order, restaurants, cus);
+            StreamProcessingChallenge(order, restaurants, cus);
         });
         CompletableFuture<Void> all = CompletableFuture.allOf(customerAnalytics, restaurantAnalytics, streamAnalytics);
         all.thenRun(() -> {
@@ -362,15 +356,15 @@ public class FoodDelivery {
                 .and(searchres)
                 .and(status)
                 .and(amtrange);
-        applyfilter(orders, finalfilter);
+        ApplyFilter(orders, finalfilter);
 
         Predicate<Order> finalfilter1 = searchcus
                 .and(amtrange);
-        applyfilter(orders, finalfilter1);
+        ApplyFilter(orders, finalfilter1);
 
     }
 
-    public static void applyfilter(List<Order> orders, Predicate<Order> filter) {
+    public static void ApplyFilter(List<Order> orders, Predicate<Order> filter) {
         System.out.println("\nresults according to given filter: ");
         orders.stream()
                 .filter(filter)
@@ -443,7 +437,7 @@ public class FoodDelivery {
     //Module 9(In-memory cache)
     private static final ConcurrentHashMap<String, LocalDateTime> cache = new ConcurrentHashMap<>();
 
-    public static void processOrder(Order order) {
+    public static void ProcessOrder(Order order) {
 
         Optional<LocalDateTime> cachedTime = Optional.ofNullable(cache.get(order.getOrder_id()));
 
@@ -460,7 +454,7 @@ public class FoodDelivery {
     }
 
     //bonus challenge
-    public static Restaurant recommendByPreviousOrders(Long customerId, List<Order> orders, List<Restaurant> restaurants) {
+    public static Restaurant RecommendByPreviousOrders(Long customerId, List<Order> orders, List<Restaurant> restaurants) {
 
         Long restaurantId = orders.stream()
                 .filter(o -> o.getCustomer_id().equals(customerId))
@@ -477,7 +471,7 @@ public class FoodDelivery {
                 .orElse(null);
     }
 
-    public static String mostOrderedCuisine(Long customerId, List<Order> orders) {
+    public static String MostOrderedCuisine(Long customerId, List<Order> orders) {
 
         return orders.stream()
                 .filter(o -> o.getCustomer_id().equals(customerId))
@@ -490,7 +484,7 @@ public class FoodDelivery {
                 .orElse(null);
     }
 
-    public static Restaurant highestRatedRestaurant(List<Restaurant> restaurants) {
+    public static Restaurant HighestRatedRestaurant(List<Restaurant> restaurants) {
 
         return restaurants.stream()
                 .sorted(Comparator.comparingDouble(Restaurant::getRating).reversed())
@@ -498,13 +492,13 @@ public class FoodDelivery {
                 .orElse(null);
     }
 
-    public static void recommendationEngine(Long customerId, List<Order> orders, List<Restaurant> restaurants) {
+    public static void RecommendationEngine(Long customerId, List<Order> orders, List<Restaurant> restaurants) {
 
-        Restaurant previousOrderRecommendation = recommendByPreviousOrders(customerId, orders, restaurants);
+        Restaurant previousOrderRecommendation = RecommendByPreviousOrders(customerId, orders, restaurants);
 
-        String favouriteCuisine = mostOrderedCuisine(customerId, orders);
+        String favouriteCuisine = MostOrderedCuisine(customerId, orders);
 
-        Restaurant highestRated = highestRatedRestaurant(restaurants);
+        Restaurant highestRated = HighestRatedRestaurant(restaurants);
 
         System.out.println("\n========== RECOMMENDATION ENGINE ==========\n");
 

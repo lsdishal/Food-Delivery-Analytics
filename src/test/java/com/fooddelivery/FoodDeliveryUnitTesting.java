@@ -29,7 +29,7 @@ public class FoodDeliveryUnitTesting {
                 new Order("O1", 1L, 1L, LocalDateTime.now().minusMinutes(10), 500, "placed", Arrays.asList("Pizza")),
                 new Order("O2", 2L, 2L, LocalDateTime.now().minusMinutes(5), 300, "placed", Arrays.asList("Burger"))
         );
-        assertTrue(FoodDelivery.validation(cus, restaurants, orders));
+        assertTrue(FoodDelivery.Validation(cus, restaurants, orders));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class FoodDeliveryUnitTesting {
         List<Customer> cus = Arrays.asList(new Customer(1L, "Deepthi", "Chennai", LocalDate.parse("2024-01-10")));
         List<Restaurant> restaurants = Arrays.asList(new Restaurant(1L, "Dominos", "cuddalore", 4.2));
         List<Order> orders = Arrays.asList(new Order("O1", 1L, 999L, LocalDateTime.now().minusMinutes(10), 500, "placed", Arrays.asList("Pizza")));
-        assertFalse(FoodDelivery.validation(cus, restaurants, orders));
+        assertFalse(FoodDelivery.Validation(cus, restaurants, orders));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class FoodDeliveryUnitTesting {
         List<Customer> cus = Arrays.asList(new Customer(1L, "Deepthi", "Chennai", LocalDate.parse("2024-01-10")));
         List<Restaurant> restaurants = Arrays.asList(new Restaurant(1L, "Dominos", "cuddalore", 4.2));
         List<Order> orders = Arrays.asList(new Order("O1", 999L, 1L, LocalDateTime.now().minusMinutes(10), 500, "placed", Arrays.asList("Pizza")));
-        assertFalse(FoodDelivery.validation(cus, restaurants, orders));
+        assertFalse(FoodDelivery.Validation(cus, restaurants, orders));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class FoodDeliveryUnitTesting {
 
         List<Order> orders = Arrays.asList(new Order("O1", 1L, 1L, LocalDateTime.now().minusMinutes(5), -500, "placed", Arrays.asList("Pizza")));
 
-        assertFalse(FoodDelivery.validation(cus, restaurants, orders));
+        assertFalse(FoodDelivery.Validation(cus, restaurants, orders));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class FoodDeliveryUnitTesting {
         List<Order> orders = Arrays.asList(new Order("O1", 1L, 1L, LocalDateTime.now(), 500, "placed", Arrays.asList("Pizza")),
                 new Order("O2", 1L, 1L, LocalDateTime.now().plusMinutes(1), 500, "placed", Arrays.asList("Pizza")));
 
-        assertFalse(FoodDelivery.validation(cus, restaurants, orders));
+        assertFalse(FoodDelivery.Validation(cus, restaurants, orders));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class FoodDeliveryUnitTesting {
         List<Order> orders = Arrays.asList(new Order("O1", 1L, 1L, LocalDateTime.now(), 500, "placed", Arrays.asList("Pizza")),
                 new Order("O2", 1L, 1L, LocalDateTime.now(), 1000, "placed", Arrays.asList("Burger")));
 
-        Map<Long, Double> result = FoodDelivery.avgspendCustomers(orders);
+        Map<Long, Double> result = FoodDelivery.AvgSpendCustomer(orders);
         System.out.println(result);
         assertEquals(750.0, result.get(1L));
     }
@@ -92,7 +92,7 @@ public class FoodDeliveryUnitTesting {
 
         List<Order> orders = Arrays.asList(new Order("O1", 1L, 1L, LocalDateTime.now(), 1000, "PLACED", Arrays.asList("Pizza")));
 
-        List<Customer> result = FoodDelivery.top10(orders, customers);
+        List<Customer> result = FoodDelivery.Top10(orders, customers);
 
         assertEquals(1, result.size());
     }
