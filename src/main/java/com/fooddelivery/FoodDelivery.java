@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Food_delivery {
+public class FoodDelivery {
 
     public static void main(String[] args) {
         List<Customer> cus = Arrays.asList(
@@ -38,11 +38,11 @@ public class Food_delivery {
         );
 
         //Module 1-5
-        completeable(orders, restaurants, cus);
+        Completable(orders, restaurants, cus);
         //module 6
-        search(orders, restaurants, cus);
+        SearchEngine(orders, restaurants, cus);
         //module 7
-        general_reporting_framework(cus, restaurants, orders);
+        GeneralReportingFramework(cus, restaurants, orders);
 
         //module8
         DateAndTime(orders);
@@ -52,10 +52,10 @@ public class Food_delivery {
         System.out.println("\nModule 9: In-memory cache for orders\n");
         System.out.println("---------------------------------------------------------------");
 
-        orders.forEach(Food_delivery::processOrder);
+        orders.forEach(FoodDelivery::processOrder);
 
         System.out.println("Processing again: ");
-        orders.forEach(Food_delivery::processOrder);
+        orders.forEach(FoodDelivery::processOrder);
 
         //Bonus challenge
         recommendationEngine(1L, orders, restaurants);
@@ -308,7 +308,7 @@ public class Food_delivery {
     }
 
     //Module 5(real time order processing pipeline)----------
-    public static void completeable(List<Order> orders, List<Restaurant> restaurants, List<Customer> cus) {
+    public static void Completable(List<Order> orders, List<Restaurant> restaurants, List<Customer> cus) {
 
         CompletableFuture<List<Order>> orderfuture = CompletableFuture.supplyAsync(() -> {
             System.out.println("Reading orders");
@@ -348,7 +348,7 @@ public class Food_delivery {
     }
 
     //Module 6(search engine)
-    public static void search(List<Order> orders, List<Restaurant> restaurants, List<Customer> cus) {
+    public static void SearchEngine(List<Order> orders, List<Restaurant> restaurants, List<Customer> cus) {
         System.out.println("---------------------------------------------------------------");
         System.out.println("\nModule 6: Search Orders \n");
         System.out.println("---------------------------------------------------------------");
@@ -379,7 +379,7 @@ public class Food_delivery {
     }
 
     //module 7(Generic reporting framework)
-    public static void general_reporting_framework(List<Customer> customers, List<Restaurant> restaurants, List<Order> orders) {
+    public static void GeneralReportingFramework(List<Customer> customers, List<Restaurant> restaurants, List<Order> orders) {
         System.out.println("---------------------------------------------------------------");
         System.out.println("\nModule 7: Generic reporting framework\n");
         System.out.println("---------------------------------------------------------------");
